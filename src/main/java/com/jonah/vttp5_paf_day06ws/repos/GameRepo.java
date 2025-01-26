@@ -21,6 +21,13 @@ public class GameRepo {
         System.out.println("READING THE FILE:" + results);
     }
 
+    public void getSomeGames(int limit, int offset){
+        Criteria criteria = Criteria.where("");
+        Query query = Query.query(criteria).limit(limit).skip(offset);
+        List<Document> results = template.find(query, Document.class, "games");
+        System.out.println("SOME GAMES: " + results);
+    }
+
 
 
     
