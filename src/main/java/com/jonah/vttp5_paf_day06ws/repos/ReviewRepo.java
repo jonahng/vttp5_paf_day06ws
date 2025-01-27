@@ -101,11 +101,12 @@ public class ReviewRepo {
             rh.setTimestamp(System.currentTimeMillis());
             rh.setUserName(d.getString("user"));
             try {
-                List<ReviewUpdate> list =  (List<ReviewUpdate>) d.get("edited");
+                String list =  (String) d.getString("edited");
                 System.out.println("TRYING TO CAST REVIEW UPDATE LIST:"  + list);
                 
             } catch (Exception e) {
                 // TODO: handle exception
+                System.out.println("COULD NOT RETRIVE EDITED");
             }
            
         }
@@ -124,6 +125,7 @@ public class ReviewRepo {
             document = d;
         }
 
+        document.replace("_id", reviewId);
         return document;
 
     }
