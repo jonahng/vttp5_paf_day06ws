@@ -1,5 +1,6 @@
 package com.jonah.vttp5_paf_day06ws.repos;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.bson.Document;
@@ -11,7 +12,10 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Repository;
 
+import com.jonah.vttp5_paf_day06ws.models.LatestReview;
 import com.jonah.vttp5_paf_day06ws.models.Review;
+import com.jonah.vttp5_paf_day06ws.models.ReviewHistory;
+import com.jonah.vttp5_paf_day06ws.models.ReviewUpdate;
 import com.mongodb.client.result.UpdateResult;
 
 @Repository
@@ -51,15 +55,79 @@ public class ReviewRepo {
     public void addReviewUpdate(String reviewId, String jsonInputString){
         Document update = Document.parse(jsonInputString);
         update.append("posted", System.currentTimeMillis());
-        System.out.println("\nReviewRepo, THE UPDATE IS:" + update.toJson());
+        System.out.println("THE REVIEW ID IS: " + reviewId  + "\nReviewRepo, THE UPDATE IS:" + update.toJson());
 
 
         Criteria criteria = Criteria.where("_id").is(reviewId);
         Query query =Query.query(criteria);
-        Update updateOps = new Update().push("edited", update);
+        Update updateOps = new Update().push("edited", update).set("comment", update.getString("comment")).set("rating", update.getInteger("rating"));
 
         UpdateResult updateResult = template.updateFirst(query, updateOps, Document.class, "comments");
     }
 
+    public LatestReview getLatestReviewFromId(String reviewId){
+        Criteria criteria = Criteria.where("_id").is(reviewId);
+        Query query = Query.query(criteria);
+        List<Document> result = template.find(query, Document.class, "comments");
+        LatestReview lr = new LatestReview();
+        lr.setEdited(false);
+        for(Document d : result){
+            lr.setComment(d.getString("comment"));
+            lr.setGameId(d.getInteger("ID"));
+            lr.setGameName(d.getString("name"));
+            lr.setRating(d.getInteger("rating"));
+            lr.setTimestamp(System.currentTimeMillis());
+            lr.setUserName(d.getString("user"));
+
+            if(d.containsKey("edited")){
+                lr.setEdited(true);
+            }
+        }
+        return lr;
+
+    }
+
+
+    public ReviewHistory getReviewHistoryFromId(String reviewId){
+        ReviewHistory rh = new ReviewHistory();
+        Criteria criteria = Criteria.where("_id").is(reviewId);
+        Query query = Query.query(criteria);
+        List<Document> result = template.find(query, Document.class, "comments");
+        for(Document d : result){
+            rh.setComment(d.getString("comment"));
+            rh.setGameId(d.getInteger("ID"));
+            rh.setGameName(d.getString("name"));
+            rh.setRating(d.getInteger("rating"));
+            rh.setTimestamp(System.currentTimeMillis());
+            rh.setUserName(d.getString("user"));
+            try {
+                List<ReviewUpdate> list =  (List<ReviewUpdate>) d.get("edited");
+                System.out.println("TRYING TO CAST REVIEW UPDATE LIST:"  + list);
+                
+            } catch (Exception e) {
+                // TODO: handle exception
+            }
+           
+        }
+
+
+
+        return rh;
+    }
+
+    public Document getReviewHistoryFromId2(String reviewId){
+        Criteria criteria = Criteria.where("_id").is(reviewId);
+        Query query = Query.query(criteria);
+        List<Document> result = template.find(query, Document.class, "comments");
+        Document document = new Document();
+        for(Document d : result){
+            document = d;
+        }
+
+        return document;
+
+    }
+
+    
     
 }

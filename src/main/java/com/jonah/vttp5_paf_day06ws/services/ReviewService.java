@@ -2,10 +2,13 @@ package com.jonah.vttp5_paf_day06ws.services;
 
 import java.io.StringReader;
 
+import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.jonah.vttp5_paf_day06ws.models.LatestReview;
 import com.jonah.vttp5_paf_day06ws.models.Review;
+import com.jonah.vttp5_paf_day06ws.models.ReviewHistory;
 import com.jonah.vttp5_paf_day06ws.models.ReviewUpdate;
 import com.jonah.vttp5_paf_day06ws.repos.ReviewRepo;
 
@@ -42,6 +45,18 @@ public class ReviewService {
 
     public void addReviewUpdate (String reviewId, String jsonStringUpdate){
     reviewRepo.addReviewUpdate(reviewId, jsonStringUpdate);
+    }
+
+    public LatestReview getLatestReview(String reviewId){
+        return reviewRepo.getLatestReviewFromId(reviewId);
+    }
+
+    public ReviewHistory gReviewHistory(String reviewId){
+        return reviewRepo.getReviewHistoryFromId(reviewId);
+    }
+
+    public Document gReviewHistory2(String reviewId){
+        return reviewRepo.getReviewHistoryFromId2(reviewId);
     }
 
     
