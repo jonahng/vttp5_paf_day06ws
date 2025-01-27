@@ -11,6 +11,8 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 
+import com.jonah.vttp5_paf_day06ws.models.ReviewUpdate;
+
 @Repository
 public class GameRepo {
     @Autowired
@@ -49,6 +51,9 @@ public class GameRepo {
         return result;
 
     }
+
+
+    
 
 
 

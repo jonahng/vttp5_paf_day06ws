@@ -8,9 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Repository;
 
 import com.jonah.vttp5_paf_day06ws.models.Review;
+import com.mongodb.client.result.UpdateResult;
 
 @Repository
 public class ReviewRepo {
@@ -44,6 +46,19 @@ public class ReviewRepo {
         Document afterInsert = template.insert(toInsert, "comments");
         ObjectId id = afterInsert.getObjectId("_id");
         System.out.println("the id for your inserted comment is:" + id);
+    }
+
+    public void addReviewUpdate(String reviewId, String jsonInputString){
+        Document update = Document.parse(jsonInputString);
+        update.append("posted", System.currentTimeMillis());
+        System.out.println("\nReviewRepo, THE UPDATE IS:" + update.toJson());
+
+
+        Criteria criteria = Criteria.where("_id").is(reviewId);
+        Query query =Query.query(criteria);
+        Update updateOps = new Update().push("edited", update);
+
+        UpdateResult updateResult = template.updateFirst(query, updateOps, Document.class, "comments");
     }
 
     
